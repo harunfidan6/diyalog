@@ -121,10 +121,23 @@ export default function App() {
   const [aiGenerating, setAiGenerating] = useState<boolean>(false);
   const [aiError, setAiError] = useState<string | null>(null);
   const [hasApiKey, setHasApiKey] = useState<boolean>(false);
+  const [configDebug, setConfigDebug] = useState<any>(null);
+  const [isCheckingConfig, setIsCheckingConfig] = useState<boolean>(false);
 
-  // Audio synthesis ref to allow canceling
-  const synthRef = useRef<SpeechSynthesis | null>(null);
-  const currentUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const checkConfig = async () => {
+    setIsCheckingConfig(true);
+    try {
+      const response = await fetch(`/api/config?t=${Date.now()}`);
+      const data = await response.json();
+      setHasApiKey(data.hasApiKey);
+      setConfigDebug(data);
+    } catch (error) {
+      console.error("Config check failed:", error);
+      setHasApiKey(false);
+    } finally {
+      setIsCheckingConfig(false);
+    }
+  };
 
   // Load scenarios from predefined list + localStorage on boot
   useEffect(() => {
@@ -141,14 +154,7 @@ export default function App() {
     setScenarios(allScenarios);
     
     // Check if Gemini API key is configured on server
-    fetch("/api/config")
-      .then(res => res.json())
-      .then(data => {
-        setHasApiKey(data.hasApiKey);
-      })
-      .catch(() => {
-        setHasApiKey(false);
-      });
+    checkConfig();
   }, []);
 
   // Initialize browser speech synthesis and load available voices
@@ -1375,13 +1381,28 @@ export default function App() {
                         <p className="font-semibold text-amber-200">Nereye eklemelisiniz?</p>
                         <ul className="list-disc list-inside space-y-1 opacity-90">
                           <li><strong>AI Studio'da:</strong> Sağ üstteki <strong>Settings &gt; Secrets</strong> menüsüne <code>GEMINI_API_KEY</code> olarak ekleyin.</li>
-                          <li><strong>Vercel'de:</strong> Project Settings &gt; <strong>Environment Variables</strong> kısmına <code>GEMINI_API_KEY</code> olarak ekleyin ve ardından <strong>Re-deploy</strong> yapın.</li>
+                          <li><strong>Vercel'de:</strong> Project Settings &gt; <strong>Environment Variables</strong> kısmına ekleyin ve <strong>mutlaka Redeploy yapın!</strong></li>
                         </ul>
                       </div>
 
-                      <p className="pt-1 text-amber-400/80 italic">
-                        Not: Anahtarı ekledikten sonra sayfayı yenilemeyi unutmayın. Hazır şablonlar ve manuel editör her zaman kullanılabilir durumdadır.
-                      </p>
+                      <div className="pt-2 flex flex-col gap-2">
+                        <button 
+                          onClick={checkConfig}
+                          disabled={isCheckingConfig}
+                          className="flex items-center gap-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 px-3 py-1.5 rounded-lg border border-amber-500/30 transition-all text-[10px] font-bold uppercase tracking-wider w-fit disabled:opacity-50"
+                        >
+                          <RefreshCw className={`w-3 h-3 ${isCheckingConfig ? 'animate-spin' : ''}`} />
+                          {isCheckingConfig ? 'Kontrol Ediliyor...' : 'Bağlantıyı Yeniden Kontrol Et'}
+                        </button>
+                        
+                        {configDebug && (
+                          <div className="bg-black/40 p-2 rounded-lg font-mono text-[9px] text-amber-500/70 border border-white/5">
+                            <p>Durum: {configDebug.hasApiKey ? '✅ BULUNDU' : '❌ EKSİK'}</p>
+                            <p>Vercel: {configDebug.isVercel ? 'EVET' : 'HAYIR'}</p>
+                            <p>Zaman: {new Date(configDebug.timestamp).toLocaleTimeString()}</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )}

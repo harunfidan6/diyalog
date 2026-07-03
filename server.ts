@@ -39,6 +39,7 @@ app.get("/api/config", (req, res) => {
     hasApiKey: !!process.env.GEMINI_API_KEY,
     env: process.env.NODE_ENV,
     isVercel: !!process.env.VERCEL,
+    vercelRegion: process.env.VERCEL_REGION || "unknown",
     timestamp: new Date().toISOString()
   });
 });
