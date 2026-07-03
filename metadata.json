@@ -1,0 +1,6 @@
+{
+  "name": "Terapötik İletişim Simülatörü",
+  "description": "Klinik iletişim psikolojisi ve öğretim tasarımı odaklı, çoklu sonlara ve tamamen dallanan ağaç yapısına sahip interaktif terapötik iletişim simülasyonu ve diyalog üreticisi.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
