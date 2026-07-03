@@ -18,7 +18,8 @@ function getGeminiClient(): GoogleGenAI {
   if (!aiClient) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      throw new Error("GEMINI_API_KEY environment variable is required");
+      console.error("CRITICAL ERROR: GEMINI_API_KEY is missing from environment variables.");
+      throw new Error("GEMINI_API_KEY environment variable is required. If you are on Vercel, please add it to your Project Settings > Environment Variables.");
     }
     aiClient = new GoogleGenAI({
       apiKey,
@@ -36,6 +37,7 @@ function getGeminiClient(): GoogleGenAI {
 app.get("/api/config", (req, res) => {
   res.json({
     hasApiKey: !!process.env.GEMINI_API_KEY,
+    env: process.env.NODE_ENV
   });
 });
 
@@ -178,16 +180,23 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(process.cwd(), "dist");
+    // In production, serve from the dist folder relative to the compiled server
+    // Since server.cjs is in /dist, __dirname is /dist
+    const distPath = __dirname;
     app.use(express.static(distPath));
     app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
+      const indexPath = path.join(distPath, "index.html");
+      res.sendFile(indexPath);
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on port ${PORT}`);
-  });
+  if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server running on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
+    });
+  }
 }
 
 startServer();
+
+export default app;
