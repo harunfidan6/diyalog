@@ -1368,13 +1368,19 @@ export default function App() {
                 {!hasApiKey && (
                   <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 flex items-start gap-3 text-amber-300">
                     <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-amber-400" />
-                    <div className="text-xs space-y-1 leading-relaxed">
+                    <div className="text-xs space-y-2 leading-relaxed">
                       <p className="font-bold text-white">Yapay Zeka API Anahtarı Algılanamadı</p>
-                      <p>
-                        Yapay zekanın dinamik olarak senaryolar üretmesi için sağ üst köşedeki <strong>Settings &gt; Secrets</strong> menüsünden <code>GEMINI_API_KEY</code> değerini girmeniz gerekmektedir.
-                      </p>
-                      <p className="font-semibold text-amber-400">
-                        Ancak üzülmeyin! Sol taraftaki listeden dilediğiniz hazır şablonları anında oynayabilir veya "Saf JSON Editörü" tabından kendi diyaloglarınızı kodlayıp test edebilirsiniz.
+                      
+                      <div className="space-y-1">
+                        <p className="font-semibold text-amber-200">Nereye eklemelisiniz?</p>
+                        <ul className="list-disc list-inside space-y-1 opacity-90">
+                          <li><strong>AI Studio'da:</strong> Sağ üstteki <strong>Settings &gt; Secrets</strong> menüsüne <code>GEMINI_API_KEY</code> olarak ekleyin.</li>
+                          <li><strong>Vercel'de:</strong> Project Settings &gt; <strong>Environment Variables</strong> kısmına <code>GEMINI_API_KEY</code> olarak ekleyin ve ardından <strong>Re-deploy</strong> yapın.</li>
+                        </ul>
+                      </div>
+
+                      <p className="pt-1 text-amber-400/80 italic">
+                        Not: Anahtarı ekledikten sonra sayfayı yenilemeyi unutmayın. Hazır şablonlar ve manuel editör her zaman kullanılabilir durumdadır.
                       </p>
                     </div>
                   </div>

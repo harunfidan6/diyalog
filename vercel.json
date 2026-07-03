@@ -7,14 +7,14 @@
       "config": { "distDir": "dist" }
     },
     {
-      "src": "dist/server.cjs",
+      "src": "server.ts",
       "use": "@vercel/node"
     }
   ],
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "dist/server.cjs"
+      "destination": "server.ts"
     },
     {
       "source": "/(.*)",

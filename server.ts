@@ -37,7 +37,9 @@ function getGeminiClient(): GoogleGenAI {
 app.get("/api/config", (req, res) => {
   res.json({
     hasApiKey: !!process.env.GEMINI_API_KEY,
-    env: process.env.NODE_ENV
+    env: process.env.NODE_ENV,
+    isVercel: !!process.env.VERCEL,
+    timestamp: new Date().toISOString()
   });
 });
 
@@ -180,9 +182,8 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    // In production, serve from the dist folder relative to the compiled server
-    // Since server.cjs is in /dist, __dirname is /dist
-    const distPath = __dirname;
+    // In production, serve from the dist folder created by vite build
+    const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
     app.get("*", (req, res) => {
       const indexPath = path.join(distPath, "index.html");
